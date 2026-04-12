@@ -7,7 +7,7 @@ using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightNUnitTests.Tests.qaPractice;
 
-public class MultiWindowTest : BaseTest
+public class MultipleWindowTest : BaseTest
 {
     private IPage page;
 
@@ -22,7 +22,7 @@ public class MultiWindowTest : BaseTest
     }
 
     [Test]
-    public async Task TestMultiWindow()
+    public async Task TestMultipleWindow()
     {
         var homePage = new HomePage(page);
         await homePage.Init();
@@ -31,10 +31,24 @@ public class MultiWindowTest : BaseTest
         var practicePage = new PracticePage(page);
         await practicePage.ClickNewTabLink();
 
-        var newTabPage = await practicePage.ClickNewBrowserTabLink();
-        var newTabTextLocator = newTabPage.GetByText("I am a new page in a new tab");
+        // await practicePage.ClickNewBrowserTabLink(); 
 
-        await Expect(newTabTextLocator).ToBeVisibleAsync();        
+        var newpage = await page.RunAndWaitForPopupAsync(async () =>
+        {
+            await page.Locator("#new-page-link").ClickAsync();
+        });
+
+        IPage targetPage = null; // Assuming the new tab is the target page
+        foreach (var p in page.Context.Pages)
+        {
+            if(await p.GetByText("I am a new page in a new tab").IsVisibleAsync())
+            {
+                targetPage = p;
+                break;
+            }
+        }
+        await targetPage.BringToFrontAsync();
+        await Expect(targetPage.GetByText("I am a new page in a new tab")).ToBeVisibleAsync();        
     }
 
     [TearDown]

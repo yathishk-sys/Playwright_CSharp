@@ -16,7 +16,8 @@ public class DriverFactory
         if (_playwright == null)
             _playwright = await Playwright.CreateAsync();
 
-        _browser = browserType.ToLower() switch
+        _browser = browserType.ToLower() 
+        switch
         {
             "chromium" => await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {

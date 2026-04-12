@@ -75,6 +75,12 @@ public static class ExtentReportManager
         _extentTest?.Fail(message);
     }
 
+    public static void LogFailWithScreenshot(string message, string screenshotPath)
+    {
+        _extentTest?.Fail(message);
+        AttachScreenshot(screenshotPath);
+    }
+
     /// <summary>
     /// Logs a warning to the current test.
     /// </summary>

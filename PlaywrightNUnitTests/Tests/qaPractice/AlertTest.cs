@@ -32,6 +32,8 @@ public class AlertTest : BaseTest
 
         await practicePage.ClickAlertButton();
         await practicePage.HandleAlert();
+
+        // var list = await practicePage.
     }
 
     [TearDown]

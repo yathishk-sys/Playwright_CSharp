@@ -50,7 +50,7 @@ public class Utils
     {
         await locator.WaitForAsync(new LocatorWaitForOptions
         {
-            State = WaitForSelectorState.Visible
+            State = WaitForSelectorState.Visible           
         });
     }
 
@@ -160,6 +160,15 @@ public class Utils
         };
     }
 
+    //Handle prompt alert
+    public void HandlePrompt(string input)
+    {
+        _page.Dialog += async (_, dialog) =>
+        {
+            await dialog.AcceptAsync(input);
+        };
+    }
+
     // JavaScript click
     public async Task JsClick(ILocator locator)
     {
@@ -177,6 +186,24 @@ public class Utils
     {
         await _page.EvaluateAsync("window.scrollTo(0, document.body.scrollHeight)");
     }
+
+    //Download file
+    public async Task<string> DownloadAsync(string clickSelector, string downloadFolder)
+        {
+            var download = await _page.RunAndWaitForDownloadAsync(async () =>
+            {
+                await _page.ClickAsync(clickSelector);
+            });
+
+            if (!Directory.Exists(downloadFolder))
+                Directory.CreateDirectory(downloadFolder);
+
+            var filePath = Path.Combine(downloadFolder, download.SuggestedFilename);
+
+            await download.SaveAsAsync(filePath);
+
+            return filePath;
+        }
 
     //Parallel execution helper
     //dotnet test -- NUnit.NumberOfTestWorkers=4

@@ -1,13 +1,14 @@
-using NUnit.Framework;
 using Microsoft.Playwright;
+using NUnit.Framework;
 using PlaywrightNUnitTests.Drivers;
-using PlaywrightNUnitTests.Pages.qaPractice;
 using PlaywrightNUnitTests.Reports;
-using static Microsoft.Playwright.Assertions;
+using PlaywrightNUnitTests.Tests;
+using System.Threading.Tasks;
+using PlaywrightNUnitTests.Pages.qaPractice;
 
 namespace PlaywrightNUnitTests.Tests.qaPractice;
 
-public class MultiWindowTest : BaseTest
+public class DropdownTest : BaseTest
 {
     private IPage page;
 
@@ -15,27 +16,22 @@ public class MultiWindowTest : BaseTest
     public async Task Setup()
     {
         page = DriverFactory.GetPage();
-
-        ExtentReportManager.CreateTest(TestContext.CurrentContext.Test.Name);
-
         await page.GotoAsync("https://www.qa-practice.com/");
+        ExtentReportManager.CreateTest(TestContext.CurrentContext.Test.Name);
     }
 
     [Test]
-    public async Task TestMultiWindow()
+    public async Task TestDropdown()
     {
         var homePage = new HomePage(page);
         await homePage.Init();
         await homePage.ClickSingleUIElements();
 
         var practicePage = new PracticePage(page);
-        await practicePage.ClickNewTabLink();
-
-        var newTabPage = await practicePage.ClickNewBrowserTabLink();
-        var newTabTextLocator = newTabPage.GetByText("I am a new page in a new tab");
-
-        await Expect(newTabTextLocator).ToBeVisibleAsync();        
+        await practicePage.ClickSelectLink();
+        await practicePage.GetDropdownValues();
     }
+       
 
     [TearDown]
     public void TestTearDown()
@@ -50,5 +46,6 @@ public class MultiWindowTest : BaseTest
         {
             ExtentReportManager.LogFail("Test Failed");
         }
+
     }
 }

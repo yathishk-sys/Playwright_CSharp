@@ -1,54 +1,49 @@
-using NUnit.Framework;
 using Microsoft.Playwright;
+using NUnit.Framework;
 using PlaywrightNUnitTests.Drivers;
-using PlaywrightNUnitTests.Pages.qaPractice;
 using PlaywrightNUnitTests.Reports;
-using static Microsoft.Playwright.Assertions;
+using PlaywrightNUnitTests.Tests;
+using System.Threading.Tasks;
+using PlaywrightNUnitTests.Pages.qaPractice;
 
 namespace PlaywrightNUnitTests.Tests.qaPractice;
 
-public class MultiWindowTest : BaseTest
+public class FileUploadTest : BaseTest
 {
     private IPage page;
-
     [SetUp]
-    public async Task Setup()
+    public async Task SetUp()
     {
         page = DriverFactory.GetPage();
-
         ExtentReportManager.CreateTest(TestContext.CurrentContext.Test.Name);
-
-        await page.GotoAsync("https://www.qa-practice.com/");
+        await page.GotoAsync("https://www.qa-practice.com/");        
     }
 
     [Test]
-    public async Task TestMultiWindow()
+    public async Task TestFileUpload()
     {
         var homePage = new HomePage(page);
         await homePage.Init();
         await homePage.ClickSingleUIElements();
 
         var practicePage = new PracticePage(page);
-        await practicePage.ClickNewTabLink();
-
-        var newTabPage = await practicePage.ClickNewBrowserTabLink();
-        var newTabTextLocator = newTabPage.GetByText("I am a new page in a new tab");
-
-        await Expect(newTabTextLocator).ToBeVisibleAsync();        
+        await practicePage.ClickFormsLink();
+        await practicePage.ClickPracticeFormLink();
+        await practicePage.ClickChooseFileIcon();
     }
 
     [TearDown]
-    public void TestTearDown()
+    public void TearDown()
     {
         var status = TestContext.CurrentContext.Result.Outcome.Status;
 
         if (status == NUnit.Framework.Interfaces.TestStatus.Passed)
         {
-            ExtentReportManager.LogPass("Test Passed");
+            ExtentReportManager.LogPass("Test passed.");
         }
-        else
+        else if (status == NUnit.Framework.Interfaces.TestStatus.Failed)
         {
-            ExtentReportManager.LogFail("Test Failed");
+            ExtentReportManager.LogFail("Test failed.");
         }
     }
 }
